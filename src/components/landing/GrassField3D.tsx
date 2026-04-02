@@ -7,11 +7,11 @@ const BLADE_COUNT = 2000;
 
 function GrassBlades() {
   const meshRef = useRef<InstancedMesh>(null!);
-  const offsets = useMemo(() => new Float32Array(BLADE_COUNT), () => {
+  const offsets = useMemo(() => {
     const o = new Float32Array(BLADE_COUNT);
     for (let i = 0; i < BLADE_COUNT; i++) o[i] = Math.random() * Math.PI * 2;
     return o;
-  });
+  }, []);
 
   const dummy = useMemo(() => new Object3D(), []);
 
