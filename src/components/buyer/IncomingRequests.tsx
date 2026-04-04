@@ -97,7 +97,7 @@ export default function IncomingRequests() {
               <div className="flex gap-3">
                 {!accepted ? (
                   <button onClick={() => acceptRequest(txn)} disabled={accepting === txn.id}
-                    className="flex-1 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold rounded-xl transition-colors disabled:opacity-60">
+                    className="flex-1 py-2.5 bg-[#f59e0b] hover:bg-[#d97706] dark:bg-amber-900 dark:hover:bg-amber-800 text-white text-sm font-semibold rounded-xl transition-colors disabled:opacity-60">
                     {accepting === txn.id ? 'Accepting…' : '✓ Accept Request'}
                   </button>
                 ) : (

@@ -86,19 +86,19 @@ export default function PostDemand() {
           <div>
             <label className="block text-sm font-medium text-[#1c1c1a] mb-1.5">Required Tonnes *</label>
             <input type="number" value={tonnes} onChange={e => setTonnes(e.target.value)} placeholder="500" min="1"
-              className="w-full px-4 py-3 rounded-xl border border-[#e8e5de] text-sm focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition-all"/>
+              className="w-full px-4 py-3 rounded-xl border border-[#e8e5de] bg-transparent text-inherit text-sm focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition-all"/>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-[#1c1c1a] mb-1.5">Price per Tonne (₹) *</label>
             <input type="number" value={price} onChange={e => setPrice(e.target.value)} placeholder="1750" min="1"
-              className="w-full px-4 py-3 rounded-xl border border-[#e8e5de] text-sm focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition-all"/>
+              className="w-full px-4 py-3 rounded-xl border border-[#e8e5de] bg-transparent text-inherit text-sm focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition-all"/>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-[#1c1c1a] mb-1.5">District *</label>
             <select value={district} onChange={e => setDistrict(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-[#e8e5de] text-sm bg-white focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition-all">
+              className="w-full px-4 py-3 rounded-xl border border-[#e8e5de] text-sm bg-transparent text-inherit focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition-all">
               {PUNJAB_DISTRICTS.map(d => <option key={d}>{d}</option>)}
             </select>
           </div>
@@ -106,11 +106,11 @@ export default function PostDemand() {
           <div>
             <label className="block text-sm font-medium text-[#1c1c1a] mb-1.5">Company Description (optional)</label>
             <textarea value={desc} onChange={e => setDesc(e.target.value)} rows={3} placeholder="Describe your facility, usage, etc."
-              className="w-full px-4 py-3 rounded-xl border border-[#e8e5de] text-sm focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition-all resize-none"/>
+              className="w-full px-4 py-3 rounded-xl border border-[#e8e5de] bg-transparent text-inherit text-sm focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition-all resize-none"/>
           </div>
 
           <button type="submit" disabled={submitting}
-            className="w-full py-3.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl text-sm transition-all disabled:opacity-60 shadow-lg shadow-amber-200 hover:-translate-y-0.5">
+            className="w-full py-3.5 bg-[#f59e0b] hover:bg-[#d97706] dark:bg-amber-900 dark:hover:bg-amber-800 text-white font-semibold rounded-xl text-sm transition-all disabled:opacity-60 shadow-lg hover:-translate-y-0.5">
             {submitting
               ? <span className="flex items-center justify-center gap-2"><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"/>Posting…</span>
               : '📋 Post Demand →'}
