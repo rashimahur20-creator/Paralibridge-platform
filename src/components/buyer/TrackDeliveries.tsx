@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import toast from 'react-hot-toast';
@@ -26,6 +26,14 @@ const balerPin = L.divIcon({
   className: '', iconSize: [38, 38], iconAnchor: [19, 38],
 });
 
+function MapFit({ pts }: { pts: [number, number][] }) {
+  const map = useMap();
+  useEffect(() => {
+    if (pts.length >= 2) { try { map.fitBounds(L.latLngBounds(pts), { padding: [40, 40], maxZoom: 12 }); } catch {} }
+  }, []);
+  return null;
+}
+
 export default function TrackDeliveries() {
   const { isDemoMode, buyerProfile, localTransactions, setLocalTransactions } = useBuyerMode();
   const [payModal, setPayModal] = useState<any>(null);
@@ -34,7 +42,7 @@ export default function TrackDeliveries() {
   const buyerLat = buyerProfile?.lat ?? 30.90;
   const buyerLng = buyerProfile?.lng ?? 75.85;
 
-  const active = localTransactions.filter(t =>
+  const active = localTransactions.filter((t: any) =>
     ['baler_assigned', 'pickup_done', 'in_transit', 'delivered', 'paid'].includes(t.status)
   );
 
@@ -43,7 +51,7 @@ export default function TrackDeliveries() {
     await new Promise(r => setTimeout(r, 1800));
     const farmerAmt = Math.round(txn.totalAmount * 0.8);
     const logisticsAmt = txn.totalAmount - farmerAmt;
-    setLocalTransactions(prev => prev.map(t =>
+    setLocalTransactions((prev: any) => prev.map((t: any) =>
       t.id === txn.id ? { ...t, status: 'paid', paidAt: new Date().toISOString(), farmerAmount: farmerAmt, logisticsAmount: logisticsAmt } : t
     ));
     toast.success(`✅ ₹${txn.totalAmount.toLocaleString('en-IN')} paid successfully!`);
@@ -69,127 +77,11 @@ export default function TrackDeliveries() {
       </motion.div>
 
       <div className="space-y-5">
-        {active.map((txn, i) => {
-          const idx = stepIdx(txn.status);
-          const isPaid = txn.status === 'paid';
-          const isDelivered = txn.status === 'delivered';
-          const isInTransit = txn.status === 'in_transit';
-
-          return (
-            <motion.div key={txn.id}
-              initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
-              className="bg-white border border-[#e8e5de] rounded-2xl overflow-hidden">
-
-              {/* Header */}
-              <div className="p-5 border-b border-[#e8e5de] flex items-start justify-between gap-3 flex-wrap">
-                <div>
-                  <p className="font-display text-base font-bold text-[#1c1c1a]">{txn.farmerName} → Your Facility</p>
-                  <p className="text-xs text-[#6b7280] mt-0.5">{txn.tonnes}T · ₹{txn.pricePerTonne}/T</p>
-                </div>
-                <p className="font-display text-xl font-bold text-amber-600">₹{txn.totalAmount.toLocaleString('en-IN')}</p>
-              </div>
-
-              {/* Timeline stepper */}
-              <div className="px-5 py-4 border-b border-[#e8e5de]">
-                <div className="flex items-start overflow-x-auto pb-1 gap-0">
-                  {STEPS.map((step, si) => {
-                    const done = idx > si, cur = idx === si;
-                    return (
-                      <div key={step.key} className="flex flex-col items-center flex-shrink-0 w-[72px]">
-                        <div className="flex items-center w-full">
-                          {si > 0 && <div className={`flex-1 h-0.5 ${done || cur ? 'bg-amber-400' : 'bg-[#e8e5de]'}`}/>}
-                          <div className={`w-7 h-7 rounded-full border-2 flex items-center justify-center text-xs flex-shrink-0 transition-all ${
-                            done ? 'bg-amber-500 border-amber-500 text-white' :
-                            cur  ? 'border-amber-400 bg-amber-50 animate-pulse' :
-                                   'border-[#e8e5de] bg-white text-[#9ca3af]'
-                          }`}>{done ? '✓' : step.icon}</div>
-                          {si < STEPS.length - 1 && <div className={`flex-1 h-0.5 ${done ? 'bg-amber-400' : 'bg-[#e8e5de]'}`}/>}
-                        </div>
-                        <p className={`text-[9px] mt-1.5 text-center font-medium leading-tight ${cur ? 'text-amber-600' : done ? 'text-amber-500' : 'text-[#9ca3af]'}`}>{step.label}</p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Content section */}
-              <div className="p-5">
-                {isPaid ? (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                    className="text-center py-4">
-                    <div className="text-4xl mb-2">✅</div>
-                    <p className="font-semibold text-[#1a5c2e]">Payment Complete</p>
-                    <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
-                      <div className="bg-green-50 rounded-xl p-3">
-                        <p className="text-xs text-[#6b7280]">Farmer received</p>
-                        <p className="font-bold text-[#1a5c2e]">₹{(txn.farmerAmount ?? Math.round(txn.totalAmount * 0.8)).toLocaleString('en-IN')}</p>
-                      </div>
-                      <div className="bg-amber-50 rounded-xl p-3">
-                        <p className="text-xs text-[#6b7280]">Logistics received</p>
-                        <p className="font-bold text-amber-600">₹{(txn.logisticsAmount ?? Math.round(txn.totalAmount * 0.2)).toLocaleString('en-IN')}</p>
-                      </div>
-                    </div>
-                  </motion.div>
-
-                ) : isDelivered ? (
-                  <div className="text-center py-2">
-                    <p className="text-lg font-semibold text-[#1c1c1a] mb-1">✓ {txn.tonnes} tonnes received at your facility</p>
-                    <p className="text-sm text-[#6b7280] mb-4">Payment pending — release payment to the farmer</p>
-                    <button onClick={() => setPayModal(txn)}
-                      className="px-8 py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-sm transition-all shadow-lg shadow-amber-200 hover:-translate-y-0.5">
-                      💳 Pay Now — ₹{txn.totalAmount.toLocaleString('en-IN')}
-                    </button>
-                  </div>
-
-                ) : (idx >= 1 && idx <= 3) ? (
-                  <div>
-                    <div className="rounded-xl overflow-hidden border border-[#e8e5de] mb-3">
-                      <div className="px-4 py-2 bg-[#fafaf7] border-b border-[#e8e5de] flex items-center justify-between">
-                        <p className="text-xs font-medium text-[#1a5c2e]">🚛 Tracking Logistics</p>
-                        <span className="text-xs text-red-500 font-semibold">🔴 Live Location View</span>
-                      </div>
-                      <MapContainer center={[(txn.balerLat + buyerLat) / 2, (txn.balerLng + buyerLng) / 2]}
-                        zoom={10} style={{ height: 260 }} scrollWheelZoom={false}
-                        maxBounds={[[6.5, 68.0], [35.5, 97.5]]} minZoom={5}>
-                        <TileLayer url="https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=en" attribution="Google Maps"/>
-                        <Marker position={[buyerLat, buyerLng]} icon={facilityPin}>
-                          <Popup>🏭 Your Facility</Popup>
-                        </Marker>
-                        <Marker position={[txn.farmerLat ?? 30.85, txn.farmerLng ?? 75.80]} icon={mk(`<svg width="34" height="34" viewBox="0 0 34 34"><circle cx="17" cy="15" r="13" fill="#1a5c2e" stroke="white" stroke-width="2"/><text x="17" y="20" text-anchor="middle" font-size="12">🌾</text></svg>`, 34, 34)}>
-                          <Popup>🌾 Farmer ({txn.farmerName})</Popup>
-                        </Marker>
-                        <Marker position={[txn.balerLat ?? 30.92, txn.balerLng ?? 75.88]} icon={balerPin}>
-                          <Popup>🚜 {txn.balerName}</Popup>
-                        </Marker>
-                        {idx < 3 ? (
-                          <Polyline positions={[[txn.balerLat ?? 30.92, txn.balerLng ?? 75.88], [txn.farmerLat ?? 30.85, txn.farmerLng ?? 75.80]]}
-                            pathOptions={{ color: '#f59e0b', weight: 4, dashArray: '6, 6' }}/>
-                        ) : (
-                          <Polyline positions={[[txn.balerLat ?? 30.92, txn.balerLng ?? 75.88], [buyerLat, buyerLng]]}
-                            pathOptions={{ color: '#2563eb', weight: 4 }}/>
-                        )}
-                        <Polyline positions={[[txn.farmerLat ?? 30.85, txn.farmerLng ?? 75.80], [buyerLat, buyerLng]]}
-                            pathOptions={{ color: '#9ca3af', weight: 2, dashArray: '4, 4' }}/>
-                      </MapContainer>
-                    </div>
-                    <p className="text-sm text-[#6b7280] text-center">
-                      {idx < 3 ? 'Baler is heading to the farm to pickup payload.' : 'Baler acquired payload and heading to your facility.'}
-                    </p>
-                  </div>
-
-                ) : (
-                  <div className="flex items-center gap-3 p-4 bg-[#fafaf7] rounded-xl border border-[#e8e5de]">
-                    <span className="text-2xl">⏳</span>
-                    <p className="text-sm text-[#6b7280]">Waiting for baler assignment...</p>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          );
-        })}
+        {active.map((txn: any, i: number) => (
+          <TransactionTracker key={txn.id} txn={txn} index={i} buyerLat={buyerLat} buyerLng={buyerLng} isDemoMode={isDemoMode} setPayModal={setPayModal} setLocalTransactions={setLocalTransactions} />
+        ))}
       </div>
 
-      {/* Pay Now modal */}
       <AnimatePresence>
         {payModal && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -225,5 +117,184 @@ export default function TrackDeliveries() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+function TransactionTracker({ txn, index, buyerLat, buyerLng, isDemoMode, setPayModal, setLocalTransactions }: any) {
+  const [balerPos, setBalerPos] = useState<[number, number]>([txn.balerLat ?? 30.92, txn.balerLng ?? 75.88]);
+  const [phase, setPhase] = useState<'to_farmer' | 'to_buyer' | 'done'>('to_farmer');
+  const simRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (isDemoMode && stepIdx(txn.status) >= 1 && txn.status !== 'delivered' && txn.status !== 'paid') {
+      startSim();
+    }
+    return () => { if (simRef.current) clearInterval(simRef.current); };
+  }, [txn.id, isDemoMode, txn.status]);
+
+  function updateStatus(status: string) {
+    setLocalTransactions((prev: any) => prev.map((t: any) => t.id === txn.id ? { ...t, status } : t));
+  }
+
+  function startSim() {
+    const FARMER_LAT = txn.farmerLat ?? 30.85;
+    const FARMER_LNG = txn.farmerLng ?? 75.80;
+    let lat = balerPos[0], lng = balerPos[1];
+    let currentPhase = stepIdx(txn.status) >= 3 ? 'to_buyer' : 'to_farmer';
+    setPhase(currentPhase as any);
+
+    if (simRef.current) clearInterval(simRef.current);
+    simRef.current = setInterval(() => {
+      const tLat = currentPhase === 'to_farmer' ? FARMER_LAT : buyerLat;
+      const tLng = currentPhase === 'to_farmer' ? FARMER_LNG : buyerLng;
+      const dLat = tLat - lat, dLng = tLng - lng;
+      const dist = Math.sqrt(dLat * dLat + dLng * dLng);
+
+      if (dist < 0.015) {
+        if (currentPhase === 'to_farmer') {
+          currentPhase = 'to_buyer';
+          setPhase('to_buyer');
+          lat = FARMER_LAT; lng = FARMER_LNG;
+          updateStatus('pickup_done');
+          setTimeout(() => updateStatus('in_transit'), 1500);
+        } else {
+          currentPhase = 'done';
+          setPhase('done');
+          if (simRef.current) clearInterval(simRef.current);
+          updateStatus('delivered');
+        }
+        return;
+      }
+      const step = 0.018 / dist;
+      lat += dLat * step;
+      lng += dLng * step;
+      setBalerPos([lat, lng]);
+    }, 3000);
+  }
+
+  const idx = stepIdx(txn.status);
+  const isPaid = txn.status === 'paid';
+  const isDelivered = txn.status === 'delivered';
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }}
+      className="bg-white border border-[#e8e5de] rounded-2xl overflow-hidden">
+      
+      <div className="p-5 border-b border-[#e8e5de] flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <p className="font-display text-base font-bold text-[#1c1c1a]">{txn.farmerName} → Your Facility</p>
+          <p className="text-xs text-[#6b7280] mt-0.5">{txn.tonnes}T · ₹{txn.pricePerTonne}/T</p>
+        </div>
+        <p className="font-display text-xl font-bold text-amber-600">₹{txn.totalAmount.toLocaleString('en-IN')}</p>
+      </div>
+
+      <div className="px-5 py-4 border-b border-[#e8e5de]">
+        <div className="flex items-start overflow-x-auto pb-1 gap-0">
+          {STEPS.map((step, si) => {
+            const done = idx > si, cur = idx === si;
+            return (
+              <div key={step.key} className="flex flex-col items-center flex-shrink-0 w-20">
+                <div className="flex items-center w-full">
+                  <div className={`flex-1 h-0.5 ${done || cur ? 'bg-amber-400' : 'bg-[#e8e5de]'} ${si === 0 ? 'opacity-0' : ''}`}/>
+                  <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs flex-shrink-0 transition-all ${
+                    done ? 'bg-amber-500 border-amber-500 text-white shadow-sm' :
+                    cur  ? 'border-amber-400 bg-amber-50 text-amber-600 shadow-sm shadow-amber-200' :
+                           'border-[#e8e5de] bg-[#f5f5f2] text-[#6b7280] dark:text-[#9ca3af]'
+                  }`}>{done ? '✓' : step.icon}</div>
+                  <div className={`flex-1 h-0.5 ${done ? 'bg-amber-400' : 'bg-[#e8e5de]'} ${si === STEPS.length - 1 ? 'opacity-0' : ''}`}/>
+                </div>
+                <p className={`text-[10px] mt-2 text-center font-bold leading-tight ${cur ? 'text-amber-600' : done ? 'text-amber-500' : 'text-[#6b7280] dark:text-[#9ca3af]'}`}>{step.label}</p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="p-5">
+        {isPaid ? (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            className="text-center py-4">
+            <div className="text-4xl mb-2">✅</div>
+            <p className="font-semibold text-[#1a5c2e]">Payment Complete</p>
+            <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
+              <div className="bg-green-50 rounded-xl p-3">
+                <p className="text-xs text-[#6b7280]">Farmer received</p>
+                <p className="font-bold text-[#1a5c2e]">₹{(txn.farmerAmount ?? Math.round(txn.totalAmount * 0.8)).toLocaleString('en-IN')}</p>
+              </div>
+              <div className="bg-amber-50 rounded-xl p-3">
+                <p className="text-xs text-[#6b7280]">Logistics received</p>
+                <p className="font-bold text-amber-600">₹{(txn.logisticsAmount ?? Math.round(txn.totalAmount * 0.2)).toLocaleString('en-IN')}</p>
+              </div>
+            </div>
+            {txn.certificateId && (
+              <p className="text-xs text-[#6b7280] mt-4 font-mono">Cert: {txn.certificateId}</p>
+            )}
+          </motion.div>
+
+        ) : isDelivered ? (
+          <div className="text-center py-6 bg-[#fafaf7] rounded-xl border border-[#e8e5de]">
+            <h3 className="text-xl font-display font-bold text-[#1c1c1a] mb-2">Delivery Successfully Arrived</h3>
+            <p className="text-[#6b7280] mb-6 text-sm max-w-sm mx-auto">
+              Please release the funds to the system to complete the transaction and acquire ownership of the biomass payload.
+            </p>
+            <button onClick={() => setPayModal(txn)}
+              className="px-8 py-3 bg-amber-500 hover:bg-amber-600 text-gray-900 dark:text-white font-bold rounded-lg text-sm transition-all shadow-md w-full max-w-[300px]">
+              Release Payment (₹{txn.totalAmount.toLocaleString('en-IN')})
+            </button>
+          </div>
+
+        ) : (idx >= 1 && idx <= 3) ? (
+          <div>
+            <div className="rounded-xl overflow-hidden border border-[#e8e5de] mb-3">
+              <div className="px-4 py-2 bg-[#fafaf7] border-b border-[#e8e5de] flex items-center justify-between">
+                <p className="text-xs font-medium text-[#1a5c2e]">
+                  {phase === 'to_farmer' ? '🚜 Heading to farm' : '🚛 In transit to facility'}
+                </p>
+                <span className="text-xs text-red-500 font-semibold animate-pulse">🔴 Live Track</span>
+              </div>
+              <MapContainer center={[(balerPos[0] + buyerLat) / 2, (balerPos[1] + buyerLng) / 2]}
+                zoom={10} style={{ height: 260 }} scrollWheelZoom={false}
+                maxBounds={[[6.5, 68.0], [35.5, 97.5]]} minZoom={5}>
+                <TileLayer url="https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=en" attribution="Google Maps"/>
+                <MapFit pts={[balerPos, [buyerLat, buyerLng], [txn.farmerLat ?? 30.85, txn.farmerLng ?? 75.80]]}/>
+                
+                <Marker position={[buyerLat, buyerLng]} icon={facilityPin}>
+                  <Popup>🏭 Your Facility</Popup>
+                </Marker>
+                <Marker position={[txn.farmerLat ?? 30.85, txn.farmerLng ?? 75.80]} icon={mk(`<svg width="34" height="34" viewBox="0 0 34 34"><circle cx="17" cy="15" r="13" fill="#1a5c2e" stroke="white" stroke-width="2"/><text x="17" y="20" text-anchor="middle" font-size="12">🌾</text></svg>`, 34, 34)}>
+                  <Popup>🌾 Farmer ({txn.farmerName})</Popup>
+                </Marker>
+                <Marker position={balerPos} icon={balerPin}>
+                  <Popup>🚜 {txn.balerName}</Popup>
+                </Marker>
+                
+                {phase === 'to_farmer' || idx < 3 ? (
+                  <Polyline positions={[balerPos, [txn.farmerLat ?? 30.85, txn.farmerLng ?? 75.80]]}
+                    pathOptions={{ color: '#2563eb', weight: 4 }}/>
+                ) : (
+                  <Polyline positions={[balerPos, [buyerLat, buyerLng]]}
+                    pathOptions={{ color: '#2563eb', weight: 4 }}/>
+                )}
+                
+                <Polyline positions={[[txn.farmerLat ?? 30.85, txn.farmerLng ?? 75.80], [buyerLat, buyerLng]]}
+                    pathOptions={{ color: '#9ca3af', weight: 2, dashArray: '4, 4' }}/>
+              </MapContainer>
+            </div>
+            <div className="flex justify-between items-center px-1">
+              <p className="text-sm text-[#6b7280]">
+                {phase === 'to_farmer' ? 'Baler heading to pickup payload.' : 'Acquired payload. Heading to facility.'}
+              </p>
+              {isDemoMode && <span className="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Demo Sim</span>}
+            </div>
+          </div>
+
+        ) : (
+          <div className="flex items-center gap-3 p-4 bg-[#fafaf7] rounded-xl border border-[#e8e5de]">
+            <span className="text-2xl">⏳</span>
+            <p className="text-sm text-[#6b7280]">Waiting for baler assignment...</p>
+          </div>
+        )}
+      </div>
+    </motion.div>
   );
 }

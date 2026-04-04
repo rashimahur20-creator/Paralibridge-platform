@@ -115,7 +115,7 @@ export default function RegisterStraw() {
           <label className="block text-sm font-medium text-[#1c1c1a] mb-1.5">Land Size (acres) *</label>
           <input type="number" value={landAcres} onChange={e => setLandAcres(e.target.value)}
             placeholder="e.g. 8" min="0.1" step="0.1"
-            className="w-full px-4 py-3 rounded-xl border border-[#e8e5de] text-sm focus:outline-none focus:border-[#1a5c2e] focus:ring-2 focus:ring-[#1a5c2e]/10 transition-all"/>
+            className="w-full px-4 py-3 rounded-xl border border-[#e8e5de] bg-transparent text-inherit text-sm focus:outline-none focus:border-[#1a5c2e] focus:ring-2 focus:ring-[#1a5c2e]/10 transition-all"/>
           <AnimatePresence>
             {tonnes > 0 && (
               <motion.div key={tonnes} initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}
@@ -132,7 +132,7 @@ export default function RegisterStraw() {
         <div>
           <label className="block text-sm font-medium text-[#1c1c1a] mb-1.5">District *</label>
           <select value={district} onChange={e => setDistrict(e.target.value)} required
-            className="w-full px-4 py-3 rounded-xl border border-[#e8e5de] text-sm bg-white focus:outline-none focus:border-[#1a5c2e] focus:ring-2 focus:ring-[#1a5c2e]/10 transition-all">
+            className="w-full px-4 py-3 rounded-xl border border-[#e8e5de] bg-transparent text-inherit text-sm focus:outline-none focus:border-[#1a5c2e] focus:ring-2 focus:ring-[#1a5c2e]/10 transition-all">
             <option value="">Select your district</option>
             {PUNJAB_DISTRICTS.map(d => <option key={d}>{d}</option>)}
           </select>
@@ -141,7 +141,7 @@ export default function RegisterStraw() {
         <div>
           <label className="block text-sm font-medium text-[#1c1c1a] mb-1.5">UPI ID *</label>
           <input type="text" value={upiId} onChange={e => setUpiId(e.target.value)} placeholder="yourname@upi"
-            className="w-full px-4 py-3 rounded-xl border border-[#e8e5de] text-sm focus:outline-none focus:border-[#1a5c2e] focus:ring-2 focus:ring-[#1a5c2e]/10 transition-all"/>
+            className="w-full px-4 py-3 rounded-xl border border-[#e8e5de] bg-transparent text-inherit text-sm focus:outline-none focus:border-[#1a5c2e] focus:ring-2 focus:ring-[#1a5c2e]/10 transition-all"/>
         </div>
 
         <button type="submit" disabled={submitting}
