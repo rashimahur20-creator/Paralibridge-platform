@@ -75,6 +75,7 @@ export default function MyTransactions() {
   const [balerPos, setBalerPos] = useState<[number, number] | null>(null);
   const [phase, setPhase] = useState<'to_farmer' | 'to_buyer' | 'done'>('to_farmer');
   const simRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [ratings, setRatings] = useState<Record<string, number>>({});
 
   // Load transactions
   useEffect(() => {
@@ -239,6 +240,28 @@ export default function MyTransactions() {
                 <div className="flex justify-between font-bold"><span className="text-[#6b7280]">Your share (80%):</span><span className="text-[#1a5c2e]">₹{Math.round(sel.totalAmount * 0.8).toLocaleString('en-IN')}</span></div>
                 <p className="text-xs text-[#9ca3af]">* 20% covers baler + transport commission</p>
               </div>
+
+              {/* Rate Baler Component */}
+              <div className="mt-5 p-4 bg-green-50 dark:bg-green-900/10 rounded-xl border border-green-200 dark:border-green-800/30">
+                <p className="text-sm font-semibold text-green-900 dark:text-green-400 mb-2">How was your logistics experience with {sel.balerName}?</p>
+                <div className="flex items-center justify-center gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      onClick={() => setRatings(prev => ({ ...prev, [sel.id]: star }))}
+                      className={`text-3xl transition-transform hover:scale-110 ${
+                        (ratings[sel.id] || 0) >= star ? 'text-[#22c55e]' : 'text-gray-300 dark:text-gray-600 drop-shadow-sm'
+                      }`}
+                    >
+                      ★
+                    </button>
+                  ))}
+                </div>
+                {ratings[sel.id] && (
+                  <p className="text-xs text-green-700 dark:text-green-500 mt-2 font-medium">Thank you for rating!</p>
+                )}
+              </div>
+
               <button onClick={() => window.location.href = '/farmer/certificates'}
                 className="mt-5 px-6 py-2.5 bg-[#1a5c2e] text-white text-sm font-semibold rounded-xl hover:bg-[#2d8a47] transition-colors">
                 🏆 Download Green Certificate

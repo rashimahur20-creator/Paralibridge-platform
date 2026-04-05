@@ -124,6 +124,7 @@ function TransactionTracker({ txn, index, buyerLat, buyerLng, isDemoMode, setPay
   const [balerPos, setBalerPos] = useState<[number, number]>([txn.balerLat ?? 30.92, txn.balerLng ?? 75.88]);
   const [phase, setPhase] = useState<'to_farmer' | 'to_buyer' | 'done'>('to_farmer');
   const simRef = useRef<any>(null);
+  const [rating, setRating] = useState(0);
 
   useEffect(() => {
     if (isDemoMode && stepIdx(txn.status) >= 1 && txn.status !== 'delivered' && txn.status !== 'paid') {
@@ -226,6 +227,28 @@ function TransactionTracker({ txn, index, buyerLat, buyerLng, isDemoMode, setPay
                 <p className="font-bold text-amber-600">₹{(txn.logisticsAmount ?? Math.round(txn.totalAmount * 0.2)).toLocaleString('en-IN')}</p>
               </div>
             </div>
+
+            {/* Rate Baler Component */}
+            <div className="mt-5 p-4 bg-green-50 dark:bg-green-900/10 rounded-xl border border-green-200 dark:border-green-800/30">
+              <p className="text-sm font-semibold text-green-900 dark:text-green-400 mb-2">How was the logistics delivery by {txn.balerName}?</p>
+              <div className="flex items-center justify-center gap-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    onClick={() => setRating(star)}
+                    className={`text-3xl transition-transform hover:scale-110 ${
+                      rating >= star ? 'text-[#22c55e]' : 'text-gray-300 dark:text-gray-600 drop-shadow-sm'
+                    }`}
+                  >
+                    ★
+                  </button>
+                ))}
+              </div>
+              {rating > 0 && (
+                <p className="text-xs text-green-700 dark:text-green-500 mt-2 font-medium">Thank you for your feedback!</p>
+              )}
+            </div>
+
             {txn.certificateId && (
               <p className="text-xs text-[#6b7280] mt-4 font-mono">Cert: {txn.certificateId}</p>
             )}
