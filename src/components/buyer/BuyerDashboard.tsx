@@ -13,6 +13,7 @@ const NAV = [
   { to: '/buyer/compliance',   end: false, icon: '📄', label: 'Compliance Report'  },
   { to: '/buyer/payments',     end: false, icon: '💳', label: 'Payment History'    },
   { to: '/fire-alerts',        end: false, icon: '🔥', label: 'Fire Alerts'        },
+  { to: '/map-3d',             end: false, icon: '🗺️', label: '3D Map'             },
 ];
 
 export default function BuyerDashboard() {

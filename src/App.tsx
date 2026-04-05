@@ -22,6 +22,7 @@ const FindBuyers         = lazy(() => import('./components/farmer/FindBuyers'));
 const MyTransactions     = lazy(() => import('./components/farmer/MyTransactions'));
 const GreenCertificates  = lazy(() => import('./components/farmer/GreenCertificates'));
 const FireAlertsPage     = lazy(() => import('./pages/FireAlertsPage'));
+const IntelligenceMap    = lazy(() => import('./components/map/IntelligenceMap'));
 
 // Buyer
 const BuyerDashboard     = lazy(() => import('./components/buyer/BuyerDashboard'));
@@ -65,6 +66,7 @@ export default function App() {
                       <Route path="/"     element={<LandingPage />} />
                       <Route path="/auth" element={<AuthPage />} />
                       <Route path="/fire-alerts" element={<FireAlertsPage />} />
+                      <Route path="/map-3d" element={<IntelligenceMap />} />
 
                       {/* Farmer */}
                       <Route path="/farmer" element={<ProtectedRoute role="farmer"><FarmerDashboard /></ProtectedRoute>}>

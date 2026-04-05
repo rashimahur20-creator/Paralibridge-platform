@@ -55,6 +55,7 @@ export default function Navbar() {
         {!currentUser ? (
           <>
             <NavLink to="/#features" label={isLanding ? 'How it works' : 'Home'} light={isLanding} />
+            <NavLink to="/map-3d" label="🗺 3D Map" light={isLanding} />
             <NavLink to="/auth?role=farmer" label={t('farmer')} light={isLanding} />
             <NavLink to="/auth?role=buyer" label={t('buyer')} light={isLanding} />
           </>

@@ -12,6 +12,7 @@ const NAV = [
   { to: '/farmer/transactions', end: false, icon: '📋', label: 'My Transactions'    },
   { to: '/farmer/certificates', end: false, icon: '🏆', label: 'Green Certificates' },
   { to: '/fire-alerts',         end: false, icon: '🔥', label: 'Fire Alerts'        },
+  { to: '/map-3d',              end: false, icon: '🗺️', label: '3D Map'             },
 ];
 
 export default function FarmerDashboard() {
