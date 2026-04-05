@@ -11,9 +11,9 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const isLanding = location.pathname === '/';
-  
+
   const [isDark, setIsDark] = React.useState(() => document.documentElement.classList.contains('dark'));
-  
+
   function toggleDark() {
     const next = !isDark;
     setIsDark(next);
@@ -31,11 +31,10 @@ export default function Navbar() {
       initial={{ y: -60, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 ${
-        isLanding
+      className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 ${isLanding
           ? 'bg-transparent'
           : 'bg-white/90 backdrop-blur-md border-b border-[#e8e5de]'
-      }`}
+        }`}
     >
       {/* Logo */}
       <Link to="/" className="flex items-center gap-2 group">
@@ -54,8 +53,8 @@ export default function Navbar() {
       <div className="hidden md:flex items-center gap-6">
         {!currentUser ? (
           <>
-            <NavLink to="/map-3d" label="🗺️ 3D Map" light={isLanding} />
-            <NavLink to="/fire-alerts" label="🔥 Fire Alerts" light={isLanding} />
+            <NavLink to="/map-3d" label=" 3D Map" light={isLanding} />
+            <NavLink to="/fire-alerts" label=" Fire Alerts" light={isLanding} />
             <NavLink to="/auth?role=farmer" label="Farmer" light={isLanding} />
             <NavLink to="/auth?role=buyer" label="Buyer" light={isLanding} />
             <NavLink to="/auth?role=baler" label="Baler" light={isLanding} />
@@ -79,6 +78,14 @@ export default function Navbar() {
                 <NavLink to="/buyer/compliance" label={t('complianceReport')} light={false} />
               </>
             )}
+            {userProfile?.role === 'baler' && (
+              <>
+                <NavLink to="/logistics" label="Profile" light={false} />
+                <NavLink to="/logistics/jobs" label="Available Jobs" light={false} />
+                <NavLink to="/logistics/current" label="Current Job" light={false} />
+                <NavLink to="/logistics/earnings" label="Earnings" light={false} />
+              </>
+            )}
           </>
         )}
       </div>
@@ -88,19 +95,17 @@ export default function Navbar() {
         {/* Language Toggle */}
         <button
           onClick={() => setLang(lang === 'en' ? 'hi' : 'en')}
-          className={`text-sm font-medium px-3 py-1 rounded-full border transition-all ${
-            isLanding
+          className={`text-sm font-medium px-3 py-1 rounded-full border transition-all ${isLanding
               ? 'border-white/40 text-white hover:bg-white/10'
               : 'border-[#e8e5de] text-[#1c1c1a] hover:border-[#1a5c2e]'
-          }`}
+            }`}
         >
           {lang === 'en' ? 'हिंदी' : 'EN'}
         </button>
 
         <button onClick={toggleDark}
-          className={`text-sm w-8 h-8 rounded-full border flex items-center justify-center transition-all ${
-            isLanding ? 'border-white/40 text-white hover:bg-white/10' : 'border-[#e8e5de] text-[#1c1c1a] hover:border-[#1a5c2e]'
-          }`}>
+          className={`text-sm w-8 h-8 rounded-full border flex items-center justify-center transition-all ${isLanding ? 'border-white/40 text-white hover:bg-white/10' : 'border-[#e8e5de] text-[#1c1c1a] hover:border-[#1a5c2e]'
+            }`}>
           {isDark ? '☀️' : '🌙'}
         </button>
 
@@ -114,11 +119,10 @@ export default function Navbar() {
           <div className="flex items-center gap-3">
             <div className="hidden md:flex items-center gap-2">
               <span className="text-sm text-[#6b7280]">{userProfile.name}</span>
-              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                userProfile.role === 'farmer'
+              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${userProfile.role === 'farmer'
                   ? 'bg-[#e8f5ec] text-[#1a5c2e]'
                   : 'bg-amber-100 text-amber-800'
-              }`}>
+                }`}>
                 {userProfile.role}
               </span>
             </div>
@@ -132,11 +136,10 @@ export default function Navbar() {
         ) : (
           <Link
             to="/auth?role=farmer"
-            className={`text-sm font-medium px-4 py-2 rounded-lg transition-all ${
-              isLanding
+            className={`text-sm font-medium px-4 py-2 rounded-lg transition-all ${isLanding
                 ? 'bg-[#f59e0b] text-white hover:bg-amber-500'
                 : 'bg-[#1a5c2e] text-white hover:bg-[#2d8a47]'
-            }`}
+              }`}
           >
             Get started
           </Link>
@@ -150,11 +153,10 @@ function NavLink({ to, label, light }: { to: string; label: string; light: boole
   return (
     <Link
       to={to}
-      className={`text-sm font-medium transition-colors ${
-        light
+      className={`text-sm font-medium transition-colors ${light
           ? 'text-white/80 hover:text-white'
           : 'text-[#6b7280] hover:text-[#1a5c2e]'
-      }`}
+        }`}
     >
       {label}
     </Link>
