@@ -1,0 +1,9 @@
+
+> parali-bridge@0.1.0 build
+> tsc && vite build
+
+src/components/map/IntelligenceMap.tsx(329,16): error TS2339: Property 'material' does not exist on type 'Object3D<Object3DEventMap>'.
+src/components/map/IntelligenceMap.tsx(382,60): error TS2339: Property 'dashOffset' does not exist on type 'LineDashedMaterial'.
+src/components/map/IntelligenceMap.tsx(388,11): error TS2322: Type 'RefObject<Line<BufferGeometry<NormalBufferAttributes>, Material | Material[], Object3DEventMap>>' is not assignable to type 'LegacyRef<SVGLineElement> | undefined'.
+  Type 'RefObject<Line<BufferGeometry<NormalBufferAttributes>, Material | Material[], Object3DEventMap>>' is not assignable to type 'RefObject<SVGLineElement>'.
+    Type 'Line<BufferGeometry<NormalBufferAttributes>, Material | Material[], Object3DEventMap>' is missing the following properties from type 'SVGLineElement': x1, x2, y1, y2, and 296 more.

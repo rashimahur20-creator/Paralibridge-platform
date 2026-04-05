@@ -326,7 +326,7 @@ function BuyerFacility({ data, visible }: { data: any, visible: boolean }) {
         const offsetTime = (time + i * 0.6) % 2;
         const scale = 1 + offsetTime * 2;
         child.scale.set(scale, scale, scale);
-        (child.material as THREE.MeshBasicMaterial).opacity = 0.4 * (1 - offsetTime / 2);
+        ((child as THREE.Mesh).material as THREE.MeshBasicMaterial).opacity = 0.4 * (1 - offsetTime / 2);
       });
     }
   });
@@ -379,13 +379,13 @@ function SupplyLine({ start, end, visible }: { start: number[], end: number[], v
   useFrame((state) => {
     if (!visible || !lineRef.current) return;
     const time = state.clock.elapsedTime;
-    (lineRef.current.material as THREE.LineDashedMaterial).dashOffset = -time * 2;
+    ((lineRef.current.material as any).dashOffset) = -time * 2;
   });
 
   if (!visible) return null;
 
   return (
-    <line ref={lineRef}>
+    <line ref={lineRef as any}>
       <bufferGeometry>
          <bufferAttribute attach="attributes-position" count={points.length} array={new Float32Array(points.flatMap(p => [p.x, p.y, p.z]))} itemSize={3} />
       </bufferGeometry>
