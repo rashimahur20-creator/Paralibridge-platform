@@ -54,10 +54,11 @@ export default function Navbar() {
       <div className="hidden md:flex items-center gap-6">
         {!currentUser ? (
           <>
-            <NavLink to="/#features" label={isLanding ? 'How it works' : 'Home'} light={isLanding} />
-            <NavLink to="/map-3d" label="🗺 3D Map" light={isLanding} />
-            <NavLink to="/auth?role=farmer" label={t('farmer')} light={isLanding} />
-            <NavLink to="/auth?role=buyer" label={t('buyer')} light={isLanding} />
+            <NavLink to="/map-3d" label="🗺️ 3D Map" light={isLanding} />
+            <NavLink to="/fire-alerts" label="🔥 Fire Alerts" light={isLanding} />
+            <NavLink to="/auth?role=farmer" label="Farmer" light={isLanding} />
+            <NavLink to="/auth?role=buyer" label="Buyer" light={isLanding} />
+            <NavLink to="/auth?role=baler" label="Baler" light={isLanding} />
           </>
         ) : (
           <>
